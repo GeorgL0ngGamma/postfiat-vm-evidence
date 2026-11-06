@@ -1,0 +1,225 @@
+POST FIAT UBUNTU VM WITHOUT REBOOTS — HANDOFF
+Task: task_1125e3205cbe1b290771e73381d50fdf
+Evidence date: 2026-11-06 UTC
+
+SUMMARY
+Existing Ubuntu LTS VM provisioned on the dedicated Hetzner host and left
+running for the separately scoped validator installation. No guest reboot
+was issued after initial boot in this work. The previously proposed reboot
+script was not run. No validator installation or activation is claimed here.
+
+IDENTIFIERS AND ALLOCATION
+Guest: postfiat-validator, Ubuntu 24.04.5 LTS (Noble), KVM/system libvirt.
+Host management command: postfiat-vm-ssh from the host root terminal.
+Guest administrator: validatoradmin; key-only SSH, non-root sudo user.
+Network: postfiat-net, bridge virbr-pft, static guest IPv4 (address redacted).
+Disk: /var/lib/libvirt/images/postfiat/postfiat-validator.raw
+Allocation: 4 vCPUs, 8 GiB memory, 160 GiB preallocated persistent raw disk.
+QEMU runs as libvirt-qemu. Recorded provisioning passed per-VM AppArmor
+enforcement, absence of host filesystem/device sharing, guest firewall and
+host/private-network isolation checks. VM autostart was enabled.
+The host firewall and libvirtd remain active.
+
+SIZING AND HOST HEADROOM
+Sizing source: postfiat.org/validator-setup/, Fresh Server Prerequisites,
+checked 2026-11-04: Ubuntu Server 22.04 LTS or newer; minimum 2 CPU cores,
+4 GB RAM, 100 GB storage.
+Selected CPU count is 2x minimum. The 4 vCPUs are shared scheduler capacity,
+not four reserved physical cores.
+8 GiB equals 8.59 decimal GB, 2.15x a 4 GB baseline.
+160 GiB equals 171.80 decimal GB, 1.72x a 100 GB baseline.
+If the guide uses GB to mean GiB, the respective factors are 2x and 1.6x.
+
+Measured host: Ryzen 9 3900, 12 physical cores/24 hardware threads, AMD-V,
+about 62 GiB RAM; mirrored NVMe storage (RAID1).
+Only one QEMU process was observed. The VM's 4 vCPUs are 16.7% of 24 host
+hardware threads; the 8 GiB allocation is about 12.9% of host memory.
+At 2026-11-06 11:10:39 UTC, with the VM running, host available memory was
+50 GiB and available root storage 460 GiB; swap use was zero. These are
+measured remaining resources after VM allocation and other host workloads,
+not resources reserved exclusively for the validator.
+Raw disk expansion is possible with host capacity checks plus guest
+partition/filesystem growth; no expansion operation is claimed or needed.
+
+GUEST VALIDATION AND CONTINUITY
+Read-only operator capture: 2026-11-06 11:09:10 UTC.
+Libvirt state: running.
+SSH identity: validatoradmin@postfiat-validator.
+OS: Ubuntu 24.04.5 LTS; nproc: 4.
+Guest boot time: 2026-11-04 12:23:43 UTC.
+Guest uptime: 1 day, 22:45; /proc/uptime: 168327.21 seconds.
+Guest boot ID: 1f2b3c86-51a4-4320-9778-985c71fd3ade.
+The capture time minus uptime is 2026-11-04 12:23:42.79 UTC, consistent
+with uptime -s rounded to seconds and the initial VM launch.
+QEMU PID 700858 began 2026-11-04 12:23:39 UTC and remained running;
+guest boot time is four seconds later. Guest readings, rather than QEMU
+elapsed time alone, substantiate continued uptime since initial launch.
+
+NTP=yes, NTPSynchronized=yes; system clock synchronized; NTP service active.
+Guest memory: 7.8 GiB usable, 1.8 GiB used, 6.0 GiB available, no swap.
+Guest root: /dev/vda1, 154G total, 13G used, 142G available, 8% used.
+DNS resolution succeeded; outbound HTTPS returned 200.
+Failed capture commands: 0; SSH/capture exit status: 0.
+No reboot, restart, package installation, or configuration edit was performed
+during these checks. Synthetic load/reboot testing is outside this task.
+
+REMAINING HANDOFF DEPENDENCIES
+Validator software, keys, domain attestation and service validation belong
+to the separate validator-installation task and are not claimed here.
+TCP 2559 forwarding is configured to the VM; public end-to-end reachability
+requires a listening peer service and an external test. Guest boot continuity
+was observed at capture time; future uptime cannot be guaranteed.
+The VM disk includes partition/filesystem overhead, hence 154G filesystem
+capacity versus the 160 GiB virtual disk.
+
+PROVENANCE AND DELIVERABLES
+terminal-captures.png: two rendered terminal captures in one PNG: fresh host
+configuration/headroom, followed by the operator's guest output from the
+reviewed script whose SHA-256 was verified before execution:
+3fbab9f314706a1b93f9447a407c1aceb174429675b99491bbe6199f74949770.
+Root-local source: /root/postfiat-vm-readonly.70g3gczx/guest-readonly-capture.txt.
+Screenshots render actual recorded text with provenance labels; no output
+values have been invented. Addresses and credentials are omitted. Files are
+plain UTF-8 text and PNG, without archives or encryption.
+
+HOST TERMINAL OUTPUT
+READ-ONLY HOST AND LIVE QEMU CONFIGURATION
+Captured UTC: 2026-11-06T11:10:39+00:00
+
+$ lscpu -J
+CPU(s): 24
+Model name: AMD Ryzen 9 3900 12-Core Processor
+Thread(s) per core: 2
+Core(s) per socket: 12
+Virtualization: AMD-V
+
+$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:            62Gi        12Gi        13Gi       6.5Mi        37Gi        50Gi
+Swap:           31Gi          0B        31Gi
+
+$ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/md2        906G  401G  460G  47% /
+
+$ ps -C qemu-system-x86_64 -o user:20,pid,lstart,etime,rss,comm
+USER                     PID                  STARTED     ELAPSED   RSS COMMAND
+libvirt-qemu          700858 Wed Nov  4 12:23:39 2026  1-22:46:59 8441176 qemu-system-x86
+
+$ selected live QEMU configuration
+-name guest=postfiat-validator,debug-threads=on
+-m size=8388608k
+-smp 4,sockets=1,dies=1,cores=4,threads=1
+-cpu host,migratable=on
+Persistent raw disk: /var/lib/libvirt/images/postfiat/postfiat-validator.raw
+Provisioned disk size: 160 GiB (executed provisioning record)
+
+$ systemctl is-active libvirtd postfiat-vm-firewall.service
+active
+active
+
+QEMU process uptime is distinct from guest uptime; see guest capture.
+
+GUEST TERMINAL OUTPUT
+POST FIAT VM READ-ONLY EVIDENCE CAPTURE
+Task: task_1125e3205cbe1b290771e73381d50fdf
+Host capture UTC: 2026-11-06T11:09:10+00:00
+This script issues no reboot, service restart, install, or configuration edit.
+
+=== Host libvirt domain state ===
+running
+
+
+
+READ-ONLY GUEST CAPTURE; NO REBOOT OR SERVICE CHANGES
+SSH identity: validatoradmin@postfiat-validator
+
+=== UTC time ===
+COMMAND: date -u --iso-8601=seconds
+2026-11-06T11:09:10+00:00
+
+=== SSH user ===
+COMMAND: whoami
+validatoradmin
+
+=== Guest hostname ===
+COMMAND: hostname
+postfiat-validator
+
+=== Ubuntu release ===
+COMMAND: cat /etc/os-release
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.5 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo
+
+=== Available CPUs ===
+COMMAND: nproc
+4
+
+=== Guest boot time (UTC) ===
+COMMAND: uptime -s
+2026-11-04 12:23:43
+
+=== Guest uptime ===
+COMMAND: uptime
+ 11:09:10 up 1 day, 22:45,  2 users,  load average: 0.09, 0.09, 0.03
+
+=== Guest boot ID ===
+COMMAND: cat /proc/sys/kernel/random/boot_id
+1f2b3c86-51a4-4320-9778-985c71fd3ade
+
+=== Guest uptime seconds ===
+COMMAND: cat /proc/uptime
+168327.21 656605.35
+
+=== Time synchronization status ===
+COMMAND: timedatectl
+               Local time: Fri 2026-11-06 11:09:10 UTC
+           Universal time: Fri 2026-11-06 11:09:10 UTC
+                 RTC time: Fri 2026-11-06 11:09:10
+                Time zone: Etc/UTC (UTC, +0000)
+System clock synchronized: yes
+              NTP service: active
+          RTC in local TZ: no
+
+=== NTP properties ===
+COMMAND: timedatectl show -p NTP -p NTPSynchronized
+NTP=yes
+NTPSynchronized=yes
+
+=== Guest memory ===
+COMMAND: free -h
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       1.8Gi       158Mi       1.3Mi       6.1Gi       6.0Gi
+Swap:             0B          0B          0B
+
+=== Guest root filesystem ===
+COMMAND: df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       154G   13G  142G   8% /
+
+=== DNS resolution ===
+COMMAND: getent ahostsv4 cloud-images.ubuntu.com (addresses omitted)
+DNS: PASS
+
+=== Outbound HTTPS ===
+COMMAND: curl --fail --silent --show-error --location --proto =https --proto-redir =https --connect-timeout 5 --max-time 20 --output /dev/null --write-out HTTPS\ status:\ %\{http_code\}\\n https://cloud-images.ubuntu.com/releases/noble/release/SHA256SUMS
+HTTPS status: 200
+
+Failed commands: 0
+No reboot, restart, update, installation, or configuration edit was issued by this capture.
+
+
+SSH/capture exit status: 0
+CAPTURE COMPLETE
+A completed capture does not assert NTP synchronization; use the recorded NTPSynchronized value.
