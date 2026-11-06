@@ -1,0 +1,189 @@
+SECOND VERIFICATION RESPONSE
+Task: task_f6b8fd6077048a0ce145978cdcb25695
+Verification request: evt_35e6f47e80873a3ae1b21c3d
+
+The operator ran the read-only collector in the host's root terminal and supplied the following output. It identifies the installation directory /opt/postfiatd, Compose file /opt/postfiatd/docker-compose.yml, running container postfiatd, binary /usr/local/bin/postfiatd, and restart policy unless-stopped. docker.service is enabled and active. A separate postfiatd.service is not present because this installation is managed by Docker.
+
+BEGIN OPERATOR-SUPPLIED RAW CAPTURE
+POST FIAT VALIDATOR — SECOND VERIFICATION RESPONSE
+Task: task_f6b8fd6077048a0ce145978cdcb25695
+UTC: 2026-11-06T15:10:22.898592+00:00
+Read-only collection. No installation, restart, configuration edit, or key/token output.
+
+VM PROCESS, SERVICE AND INSTALL LOCATION
+COMMAND: /usr/bin/ssh -F /root/.ssh/postfiat-vm.conf -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o UpdateHostKeys=no -o IdentitiesOnly=yes -o IdentityAgent=none -o ForwardAgent=no -o ClearAllForwardings=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=2 postfiat-vm python3 -I -
+Guest program is supplied through stdin; no guest files are written.
+STDOUT:
+
+UTC: 2026-11-06T15:10:23.390834+00:00
+COMMAND: hostname
+STDOUT:
+postfiat-validator
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.391841+00:00
+COMMAND: id
+STDOUT:
+uid=1000(validatoradmin) gid=1000(validatoradmin) groups=1000(validatoradmin),27(sudo)
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.394218+00:00
+COMMAND: ps -eo user,pid,comm
+Output filter: (^USER|postfiat|validator|rippled)
+STDOUT:
+USER         PID COMMAND
+root       19242 postfiatd
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.405735+00:00
+COMMAND: sudo -n ss -tlnp
+STDOUT:
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
+LISTEN 0      4096       127.0.0.1:35721      0.0.0.0:*    users:(("containerd",pid=12826,fd=14))
+LISTEN 0      4096         0.0.0.0:2559       0.0.0.0:*    users:(("docker-proxy",pid=19276,fd=7))
+LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=7956,fd=15))
+LISTEN 0      4096       127.0.0.1:5005       0.0.0.0:*    users:(("docker-proxy",pid=19292,fd=7))
+LISTEN 0      4096       127.0.0.1:50051      0.0.0.0:*    users:(("docker-proxy",pid=19344,fd=7))
+LISTEN 0      4096      127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=7956,fd=17))
+LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=7930,fd=3),("systemd",pid=1,fd=238))
+LISTEN 0      512        127.0.0.1:49374      0.0.0.0:*    users:(("opencode",pid=12228,fd=8))
+LISTEN 0      4096       127.0.0.1:6005       0.0.0.0:*    users:(("docker-proxy",pid=19308,fd=7))
+LISTEN 0      4096       127.0.0.1:6006       0.0.0.0:*    users:(("docker-proxy",pid=19326,fd=7))
+LISTEN 0      4096            [::]:22            [::]:*    users:(("sshd",pid=7930,fd=4),("systemd",pid=1,fd=239))
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.427896+00:00
+COMMAND: systemctl list-units --all --no-pager --plain --no-legend
+Output filter: postfiat|validator|rippled|docker
+STDOUT:
+sys-devices-virtual-net-docker0.device                                                                 loaded    active   plugged   /sys/devices/virtual/net/docker0
+sys-subsystem-net-devices-docker0.device                                                               loaded    active   plugged   /sys/subsystem/net/devices/docker0
+run-docker-netns-9842f2a20c3b.mount                                                                    loaded    active   mounted   /run/docker/netns/9842f2a20c3b
+var-lib-docker-rootfs-overlayfs-47db0511e10a498960c5de9b1409da03111a86129042d4285fa0e97ed528807e.mount loaded    active   mounted   /var/lib/docker/rootfs/overlayfs/47db0511e10a498960c5de9b1409da03111a86129042d4285fa0e97ed528807e
+docker-47db0511e10a498960c5de9b1409da03111a86129042d4285fa0e97ed528807e.scope                          loaded    active   running   libcontainer container 47db0511e10a498960c5de9b1409da03111a86129042d4285fa0e97ed528807e
+session-10.scope                                                                                       loaded    active   abandoned Session 10 of User validatoradmin
+session-470.scope                                                                                      loaded    active   running   Session 470 of User validatoradmin
+docker.service                                                                                         loaded    active   running   Docker Application Container Engine
+docker.socket                                                                                          loaded    active   running   Docker Socket for the API
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.447081+00:00
+COMMAND: systemctl show docker.service --no-pager -p Id -p LoadState -p ActiveState -p UnitFileState -p FragmentPath -p WorkingDirectory -p Restart
+STDOUT:
+Restart=always
+WorkingDirectory=
+Id=docker.service
+LoadState=loaded
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/docker.service
+UnitFileState=enabled
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.454934+00:00
+COMMAND: systemctl show postfiatd.service --no-pager -p Id -p LoadState -p ActiveState -p UnitFileState -p FragmentPath -p WorkingDirectory -p Restart
+STDOUT:
+Restart=no
+WorkingDirectory=
+Id=postfiatd.service
+LoadState=not-found
+ActiveState=inactive
+FragmentPath=
+UnitFileState=
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.461370+00:00
+COMMAND: sudo -n readlink -f /proc/19242/exe
+STDOUT:
+/usr/local/bin/postfiatd
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.470859+00:00
+COMMAND: sudo -n readlink -f /proc/19242/cwd
+STDOUT:
+/var/lib/postfiatd
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.479073+00:00
+COMMAND: sudo -n docker ps -a --format '{"ID":{{json .ID}},"Names":{{json .Names}},"Image":{{json .Image}},"Status":{{json .Status}}}'
+STDOUT:
+{"ID":"47db0511e10a","Names":"postfiatd","Image":"agtipft/postfiatd:testnet-light-latest","Status":"Up 46 hours"}
+STDERR:
+EXIT: 0
+
+UTC: 2026-11-06T15:10:23.520856+00:00
+COMMAND: sudo -n docker inspect 47db0511e10a --format 'Name={{.Name}}
+Image={{.Config.Image}}
+Running={{.State.Running}}
+StartedAt={{.State.StartedAt}}
+RestartPolicy={{.HostConfig.RestartPolicy.Name}}
+ContainerWorkingDirectory={{.Config.WorkingDir}}
+ComposeWorkingDirectory={{index .Config.Labels "com.docker.compose.project.working_dir"}}
+ComposeConfigFiles={{index .Config.Labels "com.docker.compose.project.config_files"}}
+{{range .Mounts}}Mount={{.Source}} -> {{.Destination}}
+{{end}}'
+STDOUT:
+Name=/postfiatd
+Image=agtipft/postfiatd:testnet-light-latest
+Running=true
+StartedAt=2026-11-04T17:27:39.922678677Z
+RestartPolicy=unless-stopped
+ContainerWorkingDirectory=/var/lib/postfiatd
+ComposeWorkingDirectory=/opt/postfiatd
+ComposeConfigFiles=/opt/postfiatd/docker-compose.yml
+Mount=/var/lib/docker/volumes/postfiatd_postfiatd-data/_data -> /var/lib/postfiatd/db
+Mount=/opt/postfiatd/logs -> /var/log/postfiatd
+Mount=/var/lib/docker/volumes/postfiatd_postfiatd-config/_data -> /etc/postfiatd
+
+STDERR:
+EXIT: 0
+
+Guest read-only collection finished.
+
+STDERR:
+
+SSH EXIT: 0
+
+DEPLOYED WEBSITE INTERVAL — PUBLIC READ-ONLY GET
+GET https://pft.gammaphoenix.com/stats.js
+PUBLIC FETCH ERROR: HTTPError: HTTP Error 403: Forbidden
+
+HOW STATS STARTED (ONE SENTENCE)
+The site was already configured before this evidence-only run: its deployed stats.js polls /api/status every 60 seconds, and the existing Worker retrieves the selected validator and node from the public Post Fiat VHS APIs.
+
+LIMITS
+Individual command failures above remain failures even when the overall SSH session exits successfully; missing properties or files are not proof of a service or install path.
+The interval is a website setting; validator secrets and full configuration files were not read.
+The initial screenshot and initial note are not included again.
+
+REPORT: /root/postfiat-validator-verification-20261106T151022898440Z.txt
+Collection has access or fetch errors; preserve the exact output for the verifier.
+END OPERATOR-SUPPLIED RAW CAPTURE
+
+SUPPLEMENTAL DEPLOYED INTERVAL CHECK
+Executed directly by the submitting agent from the host's claw account. This successful curl fetch is separate from, and does not erase, the operator's Python HTTP 403 above.
+
+COMMAND: date -u --iso-8601=seconds
+OUTPUT:
+2026-11-06T15:10:48+00:00
+
+COMMAND: curl --fail --silent --show-error https://pft.gammaphoenix.com/stats.js | grep -nE 'const PERIOD|fetch\("/api/status"|setTimeout\(refresh'
+OUTPUT:
+2:  const PERIOD = 60000;
+60:      const response = await fetch("/api/status", {
+77:      if (!document.hidden) timer = setTimeout(refresh, PERIOD);
+
+COMMAND: curl --fail --silent --show-error https://pft.gammaphoenix.com/stats.js | sha256sum
+OUTPUT:
+c900fd4205cbf348a0081b9b3c7561f0dbefea61b4ad4d7c48af3576ee145b63  -
+
+RESULT
+The requested running process/container, installation directory, persistence configuration and deployed 60-second interval are now evidenced. The interval is configured in the website rather than a VM polling service. The collector's public fetch failed with HTTP 403; the separate curl check succeeded. No reboot or restart test, local validator RPC comparison, or installation during this evidence-only run is claimed.
