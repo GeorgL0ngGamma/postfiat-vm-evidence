@@ -1,0 +1,38 @@
+Install Post Fiat Validator With 60-Second Live Stats
+Task: task_f6b8fd6077048a0ce145978cdcb25695
+Captured 2026-11-06 UTC; no code or service changes made.
+
+INSTALL LOCATION AND SERVICE
+Reported installation host: existing Ubuntu VM postfiat-validator on the Helsinki host. The operator's 2026-11-06 11:09:10 UTC read-only capture confirms that VM was running.
+Exact installed directory: unverified; inaccessible from this account.
+Actual validator service/container name and persistent restart configuration: unverified; inaccessible from this account.
+The public validator reports build 1.0.9. This is not proof of a particular local unit name or restart policy.
+
+60-SECOND CONFIGURATION EXCERPT
+Publicly deployed stats.js, identical to the existing local copy:
+  const PERIOD = 60000;
+  if (document.hidden || running) return;
+  const response = await fetch("/api/status", {
+    cache: "no-store",
+    signal: AbortSignal.timeout(12000),
+    headers: { Accept: "application/json" },
+  });
+  if (!document.hidden) timer = setTimeout(refresh, PERIOD);
+Relevant lines excerpted; intervening code omitted. No credentials are present.
+Deployed stats.js SHA256:
+c900fd4205cbf348a0081b9b3c7561f0dbefea61b4ad4d7c48af3576ee145b63
+
+TIMESTAMPED LIVE-SITE RUNTIME LOG
+Method: one Chromium page at pft.gammaphoenix.com remained visible; its own JavaScript made the requests. No manual refresh or injected polling. Each row records the actual /api/status response and rendered DOM after that response.
+Received UTC                HTTP  Validator fetched UTC       Ledger   Node fetched UTC            State Peers Uptime(s) Ledger range
+2026-11-06T14:59:45.766Z     200   2026-11-06T14:59:45.588Z    7816106  2026-11-06T14:59:45.747Z    full  21    163799    7815191-7816078
+2026-11-06T15:00:46.200Z     200   2026-11-06T15:00:46.049Z    7816129  2026-11-06T15:00:46.182Z    full  21    163919    7815191-7816118
+2026-11-06T15:01:46.474Z     200   2026-11-06T15:01:46.456Z    7816160  2026-11-06T15:01:46.456Z    full  21    164039    7815191-7816158
+2026-11-06T15:02:46.795Z     200   2026-11-06T15:02:46.732Z    7816179  2026-11-06T15:02:46.778Z    full  21    164039    7815191-7816158
+Intervals: 60.434s, 60.274s, 60.321s.
+All four rendered ledger values matched their response (7,816,106; 7,816,129; 7,816,160; 7,816,179). Every response rendered Observed, full, 21 peers, build 1.0.9, 1.00 ms I/O latency and 100.00% agreement. The accompanying live-stats.png is the final page screenshot.
+
+IDENTITY AND LIMITATIONS
+The existing Worker selects validator public key nHUXePDsa4YPuzLw1AAFk1ePZqVcNPAqsrmGJsC2ZXir48G1Kgwh and node public key n9KxNnGBGpcUJp9p9AN4spT7tVq16BFxWDX8Wv5k2V6mPY1E3NHY from the public Post Fiat VHS APIs. A direct public validator lookup during capture confirmed the domain pft.gammaphoenix.com, domain_verified=true and build 1.0.9.
+The screenshot and log prove live website refresh and advancing observed validator ledgers. Data comes from the public crawler, so node fields can repeat between polls; fetchedAt is the Worker retrieval time, not the validator's ledger-close time.
+Local validator/service output, exact install directory, and persistent service configuration could not be checked: VM SSH credentials belong to root and sudo -n requires a password. The DOM was compared with the site's service response, not local validator RPC. Full installation/persistence and local-output consistency requirements remain unverified.
